@@ -66,3 +66,20 @@
 ## + Makes eval() safer. There are some differences in the way eval() behaves in strict mode and in non-strict mode. Most significantly, in strict mode, variables and functions declared inside of an eval() statement are not created in the containing scope (they are created in the containing scope in non-strict mode, which can also be a common source of problems.
 
 ## + Throws error on invalid usage of delete. The delete operator (used to remove properties from objects) cannot be used on non-configurable properties of the object. Non-strict code will fail silently when an attempt is made to delete a non-configurable property, whereas strict mode will throw an error in such a case.
+
+# Will the two functions return the same thing? Why or why not?
+# function foo1() {
+#   return {
+#      bar: "hello"
+#   }; 
+# }
+
+# function foo2() {
+#   return 
+#   {
+#      bar: "hello"
+#   }; 
+# }
+
+## When invoked, foo2 will return undefined because while semicolons are technically optional in JS, a semicolon is 
+## automatically added to the end of the return when encountered without open brackets
