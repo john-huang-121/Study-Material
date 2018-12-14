@@ -3,8 +3,8 @@
 while this is a good way to check, the caveat is null is also considered an "object". To avoid this, also check whether bar !== null.
 Note: bar will return false if it's a function, so also check whether it's a function if you want it to be true.
 
+## What will the problem output to the console? 
 ```
-What will the problem output to the console? 
  (function() {
    var a = b = 3;
  })();
@@ -20,8 +20,8 @@ But how can b be defined outside of the scope of the enclosing function? Well, s
 shorthand for the statements b = 3; and var a = b;, b ends up being a global variable (since it is not preceded by the 
 var keyword) and is therefore still in scope even outside of the enclosing function.
 
+## What will the problem output to the console?
 ```
- What will the problem output to the console?
  var myObject = {
     foo: "bar",
     func: function() {
@@ -88,3 +88,69 @@ function foo2() {
 
 When invoked, foo2 will return undefined because while semicolons are technically optional in JS, a semicolon is 
 automatically added to the end of the return when encountered without open brackets
+
+## What is NaN? What is its type? How can you reliably test if a value is equal to NaN?
+
+a NaN property represents a value that is "not a number". This is the result of an operation that could not be performed because one of its operands was a non-numeric or the result is a non-numeric. NaN type is in fact a Number. `console.log(typeof NaN === 'number')` returns true, but `(NaN === NaN)` is false. One solutions is to use the built-in global function `isNaN()`, but it's not perfect. A better way is to use value !== value because it'll only produce true if the value is equal to NaN.
+Note: As of ES6, an new more reliable function Function.isNaN() is more reliable than the old global isNaN()
+
+## What will the code below output? 
+```
+console.log(0.1 + 0.2);
+console.log(0.1 + 0.2 == 0.3);
+```
+
+An educated answer to this question would simply be: “You can’t be sure. it might print out 0.3 and true, or it might not. Numbers in JavaScript are all treated with floating point precision, and as such, may not always yield the expected results.”
+
+The example provided above is classic case that demonstrates this issue. Surprisingly, it will print out:
+`0.30000000000000004 and false`.
+
+A typical solution is to compare the absolute difference between two numbers with the special constant `Number.EPSILON:`
+```
+function areTheNumbersAlmostEqual(num1, num2) {
+	return Math.abs( num1 - num2 ) < Number.EPSILON;
+}
+console.log(areTheNumbersAlmostEqual(0.1 + 0.2, 0.3));
+```
+
+## Discuss the possible ways to write a function isInteger(x) that determines if x is an integer.
+
+ES6 introduces Number.isInteger().
+Previously, the simplest and cleanest way is to use the bitwise XOR operator `function isInteger(x) { return (x ^ 0) === x; }`
+and a less elegant solution `function isInteger(x) { return Math.round(x) === x; }` or `Math.ceil()` or `function isInteger(x) { return (typeof x === 'number') && (x % 1 === 0); }`
+
+## In what order will the numbers 1-4 be logged to the console when the code below is executed? Why?
+```
+(function() {
+    console.log(1); 
+    setTimeout(function(){console.log(2)}, 1000); 
+    setTimeout(function(){console.log(3)}, 0); 
+    console.log(4);
+})();
+```
+
+1, 4, 3, 2. are logged this way due to JavaScript events and timing (event loop).
++ 1 and 4 are displayed first since they are logged by console.log() without any delay
++ 3 and 2 are logged later because it's an asynchronous function
+The browser has an event loop which checks the event queue and processes pending events. If an event happens in the background (ie: `onload` event) while the browser is busy (ie processing `onclick`), the event gets appended to the queue. When the onclick handler is complete, the browser checks the queue for the next event.
+
+Similarly, `setTimeout` puts execution of its referenced function in the event queue if the browser is busy. When a zero is passed into the second argument of `setTimeout`, the browser attempts to do it ASAP in the next tick, but is still delayed.
+
+## Write a simple function (less than 160 characters) that returns a boolean  indicating whether or not a string is a palindrome.
+```my code
+function isPalindrome(input) {
+  return input.split('').reverse().join('') === input
+}
+```
+```online code
+function isPalindrome(str) {
+  str = str.replace(/\W/g, '').toLowerCase();
+  return (str == str.split('').reverse().join(''));
+}
+```
+
+## Write a sum method which will work properly when invoked using either syntax below.
+```
+console.log(sum(2,3)); //output 5
+console.log(sum(2)(3)); //output 5
+```
