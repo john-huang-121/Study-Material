@@ -154,3 +154,91 @@ function isPalindrome(str) {
 console.log(sum(2,3)); //output 5
 console.log(sum(2)(3)); //output 5
 ```
+
+At least two ways:
+```one
+function sum(x) {
+  if (arguments.length === 2) {
+    return arguments[0] + argument[1];
+  } else {
+    return function(y) { return x + y };
+  }
+}
+```
+JS functions allow access to `arguments` object which provides access to actual arguments passed to a function. This enables us to use the `length` property to determine at runtime the number of arguments passed to the function. If two arguments are passed, the function adds them together. Otherwise, return an anonymous function that adds together the first argument and the second argument from the anon function.
+
+```two
+function (x, y) {
+  if (y !== undefined) {
+    return x + y;
+  } else {
+    return function (y) { return x + y };
+  }
+}
+```
+When function is invoked, JS doesn't require the number of arguments to match number of arguments. Excess arguments will simply be ignored past two.
+
+Note: More elegantly done with currying function and ...Args? Look into this the second time through.
+
+## What gets logged to the console when the user clicks on button 4? and why? Provide another alternative that will work. Consider the following code:
+```
+for (var i = 0; i < 5; i++) {
+  var btn = document.createElement('button');
+  btn.appendChild(document.createTextNode('Button ' + i));
+  btn.addEventListener('click', function(){ console.log(i); });
+  document.body.appendChild(btn);
+}
+```
+No matter what button the user clicks the number 5 will always be logged to the console. This is because, at the point that the onclick method is invoked (for any of the buttons), the for loop has already completed and the variable i already has a value of 5. (Bonus points for the interviewee if they know enough to talk about how execution contexts, variable objects, activation objects, and the internal “scope” property contribute to the closure behavior.)
+
+The key to making this work is to capture the value of i at each pass through the for loop by passing it into a newly created function object. Here are four possible ways to accomplish this:
+```
+for (var i = 0; i < 5; i++) {
+  var btn = document.createElement('button');
+  btn.appendChild(document.createTextNode('Button ' + i));
+  btn.addEventListener('click', (function(i) {
+    return function() { console.log(i); };
+  })(i));
+  document.body.appendChild(btn);
+}
+```
+Alternatively, you could wrap the entire call to btn.addEventListener in the new anonymous function:
+```
+for (var i = 0; i < 5; i++) {
+  var btn = document.createElement('button');
+  btn.appendChild(document.createTextNode('Button ' + i));
+  (function (i) {
+    btn.addEventListener('click', function() { console.log(i); });
+  })(i);
+  document.body.appendChild(btn);
+}
+```
+Or, we could replace the for loop with a call to the array object’s native forEach method:
+```
+['a', 'b', 'c', 'd', 'e'].forEach(function (value, i) {
+  var btn = document.createElement('button');
+  btn.appendChild(document.createTextNode('Button ' + i));
+  btn.addEventListener('click', function() { console.log(i); });
+  document.body.appendChild(btn);
+});
+```
+Lastly, the simplest solution, if you’re in an ES6/ES2015 context, is to use let i instead of var i:
+```
+for (let i = 0; i < 5; i++) {
+  var btn = document.createElement('button');
+  btn.appendChild(document.createTextNode('Button ' + i));
+  btn.addEventListener('click', function(){ console.log(i); });
+  document.body.appendChild(btn);
+}
+```
+
+## Assuming d is an "empty" space in scope, var d = {}, what is accomplished with this code?
+```
+['zebra','horse'].forEach( function(k) {
+  d[k] = undefined;
+});
+```
+
+The code snippet, sets two properties on the object d. Ideally, any lookup performed on a JavaScript object with an unset key evaluates to undefined. But running this code marks those properties as “own properties” of the object.
+
+This is a useful strategy for ensuring that an object has a given set of properties. Passing this object to Object.keys will return an array with those set keys as well (even if their values are undefined).
