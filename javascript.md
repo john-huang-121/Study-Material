@@ -242,3 +242,10 @@ for (let i = 0; i < 5; i++) {
 The code snippet, sets two properties on the object d. Ideally, any lookup performed on a JavaScript object with an unset key evaluates to undefined. But running this code marks those properties as “own properties” of the object.
 
 This is a useful strategy for ensuring that an object has a given set of properties. Passing this object to Object.keys will return an array with those set keys as well (even if their values are undefined).
+
+## Bitwise AND | a & b | returns a 1 in each bit position for the corresponding bits of both operands are 1s
+## Bitwise OR  | a | b | returns a 1 in each bit position for which either operands are 1s
+## Bitwise XOR | a ^ b | returns a 1 in each bit position for which either operands are 1s but NOT both
+## Bitwise NOT | ~ a   | inverts the bits of its operands
+
+## 
