@@ -325,3 +325,91 @@ var nextListItem = function() {
 ```
 
 The stack overflow is eliminated because the event loop handles the recursion, not the call stack. When nextListItem runs, if item is not null, the timeout function (nextListItem) is pushed to the event queue and the function exits, thereby leaving the call stack clear. When the event queue runs its timed-out event, the next item is processed and a timer is set to again invoke nextListItem. Accordingly, the method is processed from start to finish without a direct recursive call, so the call stack remains clear, regardless of the number of iterations.
+
+## What is "closure" in JavaScript? Provide an example.
+
+A closure is an inner function that has access to the variables in the outer (enclosing) function’s scope chain. The closure has access to variables in three scopes; specifically: (1) variable in its own scope, (2) variables in the enclosing function’s scope, and (3) global variables.
+
+Here is an example:
+
+```
+var globalVar = "xyz";
+
+(function outerFunc(outerArg) {
+    var outerVar = 'a';
+    
+    (function innerFunc(innerArg) {
+    var innerVar = 'b';
+    
+    console.log(
+        "outerArg = " + outerArg + "\n" +
+        "innerArg = " + innerArg + "\n" +
+        "outerVar = " + outerVar + "\n" +
+        "innerVar = " + innerVar + "\n" +
+        "globalVar = " + globalVar);
+    
+    })(456);
+})(123);
+```
+
+In the above example, variables from innerFunc, outerFunc, and the global namespace are all in scope in the innerFunc. The above code will therefore produce the following output:
+
+```
+outerArg = 123
+innerArg = 456
+outerVar = a
+innerVar = b
+globalVar = xyz
+```
+
+## What will be the output of the following code:
+```
+for (var i = 0; i < 5; i++ ){
+  setTimeout(function() { console.log(i); }, i * 1000 );
+}
+```
+
+The code sample shown will not display the values 0, 1, 2, 3, and 4 as might be expected; rather, it will display 5, 5, 5, 5, and 5.
+
+The reason for this is that each function executed within the loop will be executed after the entire loop has completed and all will therefore reference the last value stored in i, which was 5.
+
+Closures can be used to prevent this problem by creating a unique scope for each iteration, storing each unique value of the variable within its scope, as follows:
+```
+for (var i = 0; i < 5; i++) {
+    (function(x) {
+        setTimeout(function() { console.log(x); }, x * 1000 );
+    })(i);
+}
+```
+This will produce the presumably desired result of logging 0, 1, 2, 3, and 4 to the console.
+
+In an ES2015 context, you can simply use let instead of var in the original code:
+```
+for (let i = 0; i < 5; i++) {
+	setTimeout(function() { console.log(i); }, i * 1000 );
+}
+```
+
+## Consider the following code and its output:
+```
+console.log("0 || 1 = "+(0 || 1));
+console.log("1 || 2 = "+(1 || 2));
+console.log("0 && 1 = "+(0 && 1));
+console.log("1 && 2 = "+(1 && 2));
+```
+
+he code will output the following four lines:
+
+0 || 1 = 1
+1 || 2 = 1
+0 && 1 = 0
+1 && 2 = 2
+In JavaScript, both || and && are logical operators that return the first fully-determined “logical value” when evaluated from left to right.
+
+The or (||) operator. In an expression of the form X||Y, X is first evaluated and interpreted as a boolean value. If this boolean value is true, then true (1) is returned and Y is not evaluated, since the “or” condition has already been satisfied. If this boolean value is “false”, though, we still don’t know if X||Y is true or false until we evaluate Y, and interpret it as a boolean value as well.
+
+Accordingly, 0 || 1 evaluates to true (1), as does 1 || 2.
+
+The and (&&) operator. In an expression of the form X&&Y, X is first evaluated and interpreted as a boolean value. If this boolean value is false, then false (0) is returned and Y is not evaluated, since the “and” condition has already failed. If this boolean value is “true”, though, we still don’t know if X&&Y is true or false until we evaluate Y, and interpret it as a boolean value as well.
+
+However, the interesting thing with the && operator is that when an expression is evaluated as “true”, then the expression itself is returned. This is fine, since it counts as “true” in logical expressions, but also can be used to return that value when you care to do so. This explains why, somewhat surprisingly, 1 && 2 returns 2 (whereas you might it expect it to return true or 1).
