@@ -472,3 +472,55 @@ f(10): returns 10 * f(9), which is 3628800
     })(2)
 })(1);
 ```
+
+The output will be 1, even though the value of x is never set in the inner function. Here’s why:
+
+As explained in our JavaScript Hiring Guide, a closure is a function, along with all variables or functions that were in-scope at the time that the closure was created. In JavaScript, a closure is implemented as an “inner function”; i.e., a function defined within the body of another function. An important feature of closures is that an inner function still has access to the outer function’s variables.
+
+Therefore, in this example, since x is not defined in the inner function, the scope of the outer function is searched for a defined variable x, which is found to have a value of 1.
+
+## What will the following code output to the console and what is the issue with this code and how can it be fixed.
+```
+var hero = {
+    _name: 'John Doe',
+    getSecretIdentity: function (){
+        return this._name;
+    }
+};
+
+var stoleSecretIdentity = hero.getSecretIdentity;
+
+console.log(stoleSecretIdentity());
+console.log(hero.getSecretIdentity());
+```
+
+The code will output:
+
+undefined
+John Doe
+The first console.log prints undefined because we are extracting the method from the hero object, so stoleSecretIdentity() is being invoked in the global context (i.e., the window object) where the _name property does not exist.
+
+One way to fix the stoleSecretIdentity() function is as follows:
+
+var stoleSecretIdentity = hero.getSecretIdentity.bind(hero);
+
+## Create a function that, given a DOM Element on the page, will visit the element itself and all of its descendents (not just its immediate children). For each element visited, the function should pass that element to a provided callback function.
+
+```
+The arguments to the function should be:
+
+a DOM element
+a callback function (that takes a DOM element as its argument)
+```
+
+Visiting all elements in a tree (DOM) is a classic Depth-First-Search algorithm application. Here’s an example solution:
+
+```
+function Traverse(p_element,p_callback) {
+   p_callback(p_element);
+   var list = p_element.children;
+   for (var i = 0; i < list.length; i++) {
+       Traverse(list[i],p_callback);  // recursive call
+   }
+}
+```
