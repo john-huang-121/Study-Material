@@ -605,3 +605,113 @@ var girl = function () {
 girl ();
 ```
 
+Neither 21, nor 20, the result is undefined
+
+It’s because JavaScript initialization is not hoisted.
+
+(Why doesn’t it show the global value of 21? The reason is that when the function is executed, it checks that there’s a local x variable present but doesn’t yet declare it, so it won’t look for global one.)
+
+## How do you clone an object?
+
+```
+var obj = {a: 1 ,b: 2}
+var objclone = Object.assign({},obj);
+Now the value of objclone is {a: 1 ,b: 2} but points to a different object than obj.
+```
+Note the potential pitfall, though: Object.clone() will just do a shallow copy, not a deep copy. This means that nested objects aren’t copied. They still refer to the same nested objects as the original:
+```
+let obj = {
+    a: 1,
+    b: 2,
+    c: {
+        age: 30
+    }
+};
+
+var objclone = Object.assign({},obj);
+console.log('objclone: ', objclone);
+
+obj.c.age = 45;
+console.log('After Change - obj: ', obj);           // 45 - This also changes
+console.log('After Change - objclone: ', objclone); // 45
+```
+
+## What will this code print?
+```
+for (let i = 0; i < 5; i++) {
+  setTimeout(function() { console.log(i); }, i * 1000 );
+}
+```
+
+It will print 0 1 2 3 4, because we use let instead of var here. The variable i is only seen in the for loop’s block scope.
+
+## What do the following lines output, and why?
+```
+console.log(1 < 2 < 3);
+console.log(3 > 2 > 1);
+```
+
+The first statement returns true which is as expected.
+
+The second returns false because of how the engine works regarding operator associativity for < and >. It compares left to right, so 3 > 2 > 1 JavaScript translates to true > 1. true has value 1, so it then compares 1 > 1, which is false.
+
+## How do you add an element to the beginning of an array? How do you add one to the end?
+
+var myArray = ['a', 'b', 'c', 'd'];
+myArray.push('end');
+myArray.unshift('start');
+console.log(myArray); // ["start", "a", "b", "c", "d", "end"]
+With ES6, one can use the spread operator:
+
+myArray = ['start', ...myArray];
+myArray = [...myArray, 'end'];
+Or, in short:
+
+myArray = ['start', ...myArray, 'end'];
+
+## Imagine you have this code:
+```
+var a = [1, 2, 3];
+a) Will this result in a crash?
+
+a[10] = 99;
+b) What will this output?
+
+console.log(a[6]);
+```
+
+a) It will not crash. The JavaScript engine will make array slots 3 through 9 be “empty slots.”
+
+b) Here, a[6] will output undefined, but the slot still remains empty rather than filled with undefined. This may be an important nuance in some cases. For example, when using map(), empty slots will remain empty in map()’s output, but undefined slots will be remapped using the function passed to it:
+
+var b = [undefined];
+b[2] = 1;
+console.log(b);             // (3) [undefined, empty × 1, 1]
+console.log(b.map(e => 7)); // (3) [7,         empty × 1, 7]
+
+## What is the value of typeof undefined == typeof NULL?
+
+The expression will be evaluated to true, since NULL will be treated as any other undefined variable.
+
+Note: JavaScript is case-sensitive and here we are using NULL instead of null.
+
+## What will console.log(typeof typeof 1) return?
+
+string
+
+typeof 1 will return "number" and typeof "number" will return string
+
+## What will the following code output and why?
+```
+var b = 1;
+function outer(){
+   	var b = 2
+    function inner(){
+        b++;
+        var b = 3;
+        console.log(b)
+    }
+    inner();
+}
+outer();
+```
