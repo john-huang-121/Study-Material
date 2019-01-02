@@ -729,3 +729,5 @@ function inner () {
     console.log(b); // output "3"
 }
 ```
+
+<!-- end of the JavaScript 37 commonly askedi interview questions -->
