@@ -762,3 +762,40 @@ They both run the function in the scope, or context, of the first argument passe
 
 For call, subsequent arguments after the first are passed into the function as arguments.
 For apply, subsequent arguments after the first have to be in an array. This is then unpacked and passed into the function as arguments.
+
+## Functional Programming
+
+A programming paradigm(style of building programs) that treats computation as the evaluation of mathematical functions and avoids changing-state and mutable data. It is a declarative programming paradigm, which means programming is done with expressions or declarations instead of statements. In functional code, the output value of a function depends only on the arguments that are passed to the function, so calling a function f twice with the same value for an argument x produces the same result f(x) each time
+
+## JavaScript Namespacing
+
+Namespacing = holding all your objects and data in a heirarchy inside one variable.
+
+```
+window.Foods = window.Foods || {};
+Foods.Grains = Foods.Grains || {};
+Foods.Grains.Wheat = Foods.Grains.Wheat || {};
+
+Foods.Grains.Wheat.harvest = function(){
+  // Do something
+}
+```
+
+While this method gets the work done - you get to use the namespace without overwriting code from other files - it results in a lot of unnecessary code at the top of each file. You're essentially ensuring the existence of each namespace that you want to use, and doing it again at the top of each file.
+
+An easier way to do this is through functional programming:
+```
+var ns = function(namespace){
+  return namespace.split('.').reduce(function(holder, name){
+    holder[name] = holder[name] || {};
+    return holder[name];
+  }, window);
+};
+```
+
+Make sure that's included first, then do at the top of the file you use it in.
+```
+ns('Foods.Grains.Wheat');
+```
+
+The namespace.split('.') breaks the namespace into it's constituent parts. reduce then steps through each part from left to right, ensuring that it exists as an object on holder, and returning the object that does. The process starts with window.
