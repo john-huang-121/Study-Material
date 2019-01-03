@@ -731,3 +731,34 @@ function inner () {
 ```
 
 <!-- end of the JavaScript 37 commonly askedi interview questions -->
+
+## The difference between `call` and `apply`
+
+```
+var person1 = {name: 'Marvin', age: 42, size: '2xM'};
+var person2 = {name: 'Zaphod', age: 42000000000, size: '1xS'};
+
+var sayHello = function(){
+    alert('Hello, ' + this.name);
+};
+
+var sayGoodbye = function(){
+    alert('Goodbye, ' + this.name);
+};
+
+sayHello();
+sayGoodbye();
+```
+
+Running this will give an error because both functions rely on their scope for `this.name` data.
+
+```
+sayHello.call(person1);
+
+sayHello.apply(person1);
+```
+
+They both run the function in the scope, or context, of the first argument passed in. They are both functions that can be called on other functions.
+
+For call, subsequent arguments after the first are passed into the function as arguments.
+For apply, subsequent arguments after the first have to be in an array. This is then unpacked and passed into the function as arguments.
