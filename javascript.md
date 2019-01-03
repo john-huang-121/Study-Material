@@ -799,3 +799,4 @@ ns('Foods.Grains.Wheat');
 ```
 
 The namespace.split('.') breaks the namespace into it's constituent parts. reduce then steps through each part from left to right, ensuring that it exists as an object on holder, and returning the object that does. The process starts with window.
+
