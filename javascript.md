@@ -833,3 +833,225 @@ The Event Queue is like the queue data structure in which it keeps the order. Th
 
 Note: Recursions can be exploited with setTimeout to stop infinite callstacks from building up.
 
+## Top 10 ES6 features
+
+1) Default Parameters in ES6
+  var link = function (height = 50, color = 0) {} - like ruby
+
+2) Template Literals in ES6
+  template literals (interpolation)
+  var url = `http://localhost:3000/api/messages/${id}`
+  var name = 'your name is: ' + name;
+
+3) Multi-line Strings in ES6
+  Use backticks to use multiline strings
+  `hi there
+  my name is`
+
+4) Destructuring Assignment in ES6
+```
+  var data = $('body').data(), // data has properties house and mouse
+  house = data.house,
+  mouse = data.mouse
+```
+Other examples of destructuring assignments (from Node.js):
+```
+var jsonMiddleware = require('body-parser').json
+
+var body = req.body, // body has username and password
+  username = body.username,
+  password = body.password  
+```
+In ES6, we can replace the ES5 code above with these statements:
+```
+var {house, mouse} = $('body').data() // we'll get house and mouse variables
+
+var {json: jsonMiddleware} = require('body-parser')
+
+var {username, password} = req.body
+```
+This also works with arrays. Crazy!
+```
+var [col1, col2]  = $('.column'),
+  [line1, line2, line3, , line5] = file.split('\n')
+```
+It might take some time to get use to the destructuring assignment syntax, but it’s a sweet sugarcoating.
+
+5) Enhanced Object Literals in ES6
+  Here’s a typical ES5 object literal with some methods and attributes/properties:
+```
+var serviceBase = {port: 3000, url: 'azat.co'},
+    getAccounts = function(){return [1,2,3]}
+
+var accountServiceES5 = {
+  port: serviceBase.port,
+  url: serviceBase.url,
+  getAccounts: getAccounts,
+  toString: function() {
+    return JSON.stringify(this.valueOf())
+  },
+  getUrl: function() {return "http://" + this.url + ':' + this.port},
+  valueOf_1_2_3: getAccounts()
+}
+```
+If we want to be fancy, we can inherit from serviceBase by making it the prototype with the Object.create method:
+```
+var accountServiceES5ObjectCreate = Object.create(serviceBase)
+var accountServiceES5ObjectCreate = {
+  getAccounts: getAccounts,
+  toString: function() {
+    return JSON.stringify(this.valueOf())
+  },
+  getUrl: function() {return "http://" + this.url + ':' + this.port},
+  valueOf_1_2_3: getAccounts()
+}
+```
+I know, accountServiceES5ObjectCreate and accountServiceES5 are NOT totally identical, because one object (accountServiceES5) will have the properties in the `__proto__` object 
+
+6) Arrow Functions in ES6
+This is probably one feature I waited the most. I love CoffeeScript for its fat arrows. Now we have them in ES6. The fat arrows are amazing because they would make your this behave properly, i.e., this will have the same value as in the context of the function—it won’t mutate. The mutation typically happens each time you create a closure.
+
+Using arrows functions in ES6 allows us to stop using that = this or self = this or _this = this or .bind(this). For example, this code in ES5 is ugly:
+```
+var _this = this
+$('.btn').click(function(event){
+  _this.sendData()
+})
+```
+This is the ES6 code without _this = this:
+```
+$('.btn').click((event) =>{
+  this.sendData()
+})
+```
+Sadly, the ES6 committee decided that having skinny arrows is too much of a good thing for us and they left us with a verbose old function instead. (Skinny arrow in CoffeeScript works like regular function in ES5 and ES6).
+
+And when an arrow function is used with one line statement, it becomes an expression, i.e,. it will implicitly return the result of that single statement. If you have more than one line, then you’ll need to use return explicitly.
+
+7) Promises in ES6
+Promises have been a controversial topic. There were a lot of promise implementations with slightly different syntax. q, bluebird, deferred.js, vow, avow, jquery deferred to name just a few. Others said we don’t need promises and can just use async, generators, callbacks, etc. Gladly, there’s a standard Promise implementation in ES6 now!
+
+Let’s consider a rather trivial example of a delayed asynchronous execution with setTimeout():
+```
+setTimeout(function(){
+  console.log('Yay!')
+}, 1000)
+```
+We can re-write the code in ES6 with Promise:
+```
+var wait1000 =  new Promise(function(resolve, reject) {
+  setTimeout(resolve, 1000)
+}).then(function() {
+  console.log('Yay!')
+})
+```
+Or with ES6 arrow functions:
+```
+var wait1000 =  new Promise((resolve, reject)=> {
+  setTimeout(resolve, 1000)
+}).then(()=> {
+  console.log('Yay!')
+})
+```
+So far, we’ve increased the number of lines of code from three to five without any obvious benefit. That’s right. The benefit will come if we have more nested logic inside of the setTimeout() callback:
+```
+setTimeout(function(){
+  console.log('Yay!')
+  setTimeout(function(){
+    console.log('Wheeyee!')
+  }, 1000)
+}, 1000)
+```
+Can be re-written with ES6 promises:
+```
+var wait1000 =  ()=> new Promise((resolve, reject)=> {setTimeout(resolve, 1000)})
+
+wait1000()
+  .then(function() {
+    console.log('Yay!')
+    return wait1000()
+  })
+  .then(function() {
+    console.log('Wheeyee!')
+  })
+```
+Still not convinced that Promises are better than regular callbacks? Me neither. I think once you got the idea of callbacks and wrap your head around them, then there’s no need for additional complexity of promises.
+
+Nevertheless, ES6 has Promises for those of you who adore them. Promises have a fail-and-catch-all callback as well which is a nice feature.
+
+8) Block-Scoped Constructs Let and Const
+let is a new var which allows to scope the variable to the blocks. We define blocks by the curly braces. In ES5, the blocks did NOTHING to the vars:
+```
+function calculateTotalAmount (vip) {
+  var amount = 0
+  if (vip) {
+    var amount = 1
+  }
+  { // more crazy blocks!
+    var amount = 100
+    {
+      var amount = 1000
+      }
+  }  
+  return amount
+}
+
+console.log(calculateTotalAmount(true))
+```
+The result will be 1000. Wow! That’s a really bad bug. In ES6, we use let to restrict the scope to the blocks. Vars are function scoped.
+```
+function calculateTotalAmount (vip) {
+  var amount = 0 // probably should also be let, but you can mix var and let
+  if (vip) {
+    let amount = 1 // first amount is still 0
+  } 
+  { // more crazy blocks!
+    let amount = 100 // first amount is still 0
+    {
+      let amount = 1000 // first amount is still 0
+      }
+  }  
+  return amount
+}
+
+console.log(calculateTotalAmount(true))
+```
+The value is 0, because the if block also has let. If it had nothing (amount=1), then the expression would have been 1.
+
+When it comes to const, things are easier; it’s just an immutable, and it’s also block-scoped like let. Just to demonstrate, here are a bunch of constants and they all are okay because they belong to different blocks:
+```
+function calculateTotalAmount (vip) {
+  const amount = 0  
+  if (vip) {
+    const amount = 1 
+  } 
+  { // more crazy blocks!
+    const amount = 100 
+    {
+      const amount = 1000
+      }
+  }  
+  return amount
+}
+
+console.log(calculateTotalAmount(true))
+```
+9) Classes in ES6
+```
+class baseModel {
+  constructor(options = {}, data = []) { // class constructor
+    this.name = 'Base'
+    this.url = 'http://azat.co/api'
+    this.data = data
+    this.options = options
+  }
+
+    getName() { // class method
+      console.log(`Class name: ${this.name}`)
+    }
+}
+```
+
+10) Modules in ES6
+
+in ES5 you would use require(), but in ES6 you'd use import export such as import * as
