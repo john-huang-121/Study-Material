@@ -1055,3 +1055,10 @@ class baseModel {
 10) Modules in ES6
 
 in ES5 you would use require(), but in ES6 you'd use import export such as import * as
+
+## Hoisting
+
+While most people say that 'declarations are moved to the top of the code' to explain why function calls before it's defined still works, it's actually because 'functions and variable declarations are added to memory during the compile phase'
+
+JavaScript only hoists declarations. Initializations are not hoisted.
+If we declare and initialize a variable, say var a = 3;, only the var a; portion (the declaration) is going to be hoisted. The a = 3; (the initialization) is not hoisted and therefor not added to memory.
