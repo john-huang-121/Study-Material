@@ -1062,3 +1062,29 @@ While most people say that 'declarations are moved to the top of the code' to ex
 
 JavaScript only hoists declarations. Initializations are not hoisted.
 If we declare and initialize a variable, say var a = 3;, only the var a; portion (the declaration) is going to be hoisted. The a = 3; (the initialization) is not hoisted and therefor not added to memory.
+
+## Comparing two objects in JS
+
+JavaScript has two different approaches for testing equality. Primitives like strings and numbers are compared by their value, while objects like arrays, dates, and user defined objects are compared by their reference. This means it compares whether two objects are referring to the same location in memory.
+
+Equality check will check whether two objects have same value for same property. To check that, you can get the keys for both the objects. If the number of properties doesn't match, these two objects are not equal. Secondly, you will check each property whether they have the same value. If all the properties have same value, they are equal.
+
+```
+function isEqual(a, b) {
+    var aProps = Object.getOwnPropertyNames(a),
+        bProps = Object.getOwnPropertyNames(b);
+
+    if (aProps.length != bProps.length) {
+        return false;
+    }
+
+    for (var i = 0; i < aProps.length; i++) {
+        var propName = aProps[i];
+
+        if (a[propName] !== b[propName]) {
+            return false;
+        }
+    }
+    return true;
+}
+```
