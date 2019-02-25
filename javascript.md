@@ -1089,3 +1089,7 @@ function isEqual(a, b) {
 }
 ```
 
+## Scope
+
+The environment, or world, that the function executes in. Default scope in JS is `Window` object of the page.
+

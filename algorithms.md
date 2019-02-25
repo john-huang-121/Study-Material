@@ -59,44 +59,38 @@ puts merge_sort.sort([4, 92, 1, 39, 19, 93, 49, 10].shuffle) # => [1, 4, 10, 19,
 # 9. Keep doing that until it's done.
 ```
 
-## Graphs
+## BFS
 
-Discrete math: graph theory. A formal way to represent a network. Defined in ordered pair form, where G = (set of vertices, set of edges).
+```JavaScript
 
-Trees are just restricted types of graphs, just with more rules to follow. A tree will always be a graph, but a graph !=tree.
+const BFS = (rootNode) => {
+  let queue = [root]
 
-1) Graph nodes are connected in any way possible, no unidirectional flow.
-2) Every graph has to be connected to at least one node.
-Note: a graph with just one node is called a singleton graph.
+  while (queue.length > 0) {
+    let current = queue.shift();
 
-3) Edges, or links, can connect nodes in any possible ways.
-
-Directed Graphs (digraph): Edges with direction or flow. One direction of travel. All edges of the graph are unidirectional.
-edge definition, the first of the edge pair is the origin and the second is the destination.
-
+    queue.push(current.left);
+    queue.push(current.right);
+  }
+} 
 ```
-v = {v1,v2,v3}
-e = {
-  (v1, v2),
-  (v1, v3),
-  (v2, v3)
+
+## DFS
+
+```JavaScript
+
+const DFS = (rootNode) => {
+  let stack = [root]
+
+  while (stack.length > 0) {
+    let current = stack.pop();
+
+    stack.push(current.left);
+    stack.push(current.right);
+  }
 }
 ```
 
-Undirected Graphs: Edges with bidirectional flow. All edges are bidirectional
+## Binary Search
 
-```
-v = {v1,v2,v3,v4}
-e = { 
-  {v1,v2},
-  {v1,v3},
-  {v1,v4},
-  {v2,v4},
-  {v2,v5}
-  ...
-}
-
-
-```
-
-Note: starting node is called origin and the end is the destination.
+## Quicksort

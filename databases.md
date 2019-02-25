@@ -9,3 +9,5 @@ Postgres has 4 different types of indexing.
 Used in cases where items indexed are composite values, and the query needs to search for element values that appear in the composite items (ie document items and the query is searching for documents containing specific words).
 Searches through partial matches on multiple columns or within an array.
 
+On Ubuntu: sudo apt-get install postgresql-contrib-9.3
+
