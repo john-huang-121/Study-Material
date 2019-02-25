@@ -58,3 +58,45 @@ puts merge_sort.sort([4, 92, 1, 39, 19, 93, 49, 10].shuffle) # => [1, 4, 10, 19,
 # 8. We check the first element on the left array versus the first element on the right array (i.e. 4 >= 9) and then add them to the new array.
 # 9. Keep doing that until it's done.
 ```
+
+## Graphs
+
+Discrete math: graph theory. A formal way to represent a network. Defined in ordered pair form, where G = (set of vertices, set of edges).
+
+Trees are just restricted types of graphs, just with more rules to follow. A tree will always be a graph, but a graph !=tree.
+
+1) Graph nodes are connected in any way possible, no unidirectional flow.
+2) Every graph has to be connected to at least one node.
+Note: a graph with just one node is called a singleton graph.
+
+3) Edges, or links, can connect nodes in any possible ways.
+
+Directed Graphs (digraph): Edges with direction or flow. One direction of travel. All edges of the graph are unidirectional.
+edge definition, the first of the edge pair is the origin and the second is the destination.
+
+```
+v = {v1,v2,v3}
+e = {
+  (v1, v2),
+  (v1, v3),
+  (v2, v3)
+}
+```
+
+Undirected Graphs: Edges with bidirectional flow. All edges are bidirectional
+
+```
+v = {v1,v2,v3,v4}
+e = { 
+  {v1,v2},
+  {v1,v3},
+  {v1,v4},
+  {v2,v4},
+  {v2,v5}
+  ...
+}
+
+
+```
+
+Note: starting node is called origin and the end is the destination.
