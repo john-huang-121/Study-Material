@@ -36,11 +36,33 @@ e = {
 }
 
 ```
+Space Complexity = O(v + e)
 
 Weighted vs Unweighted graphs (cost of route) - each edge has an associated cost to use
 
+Self-loop: and edge with both it's starting and endpoint on the same vertex
 
+Multi-edge / Parallel Edge: A node that has two or more connections to the same vertices.
 
+Simple graph: a graph with no self-loop or multi-edges. 
+  + Maximum number of edges: 
+    if |v| = n
+    + Directed: then 0 <= n <= n(n-1)
+    + Undirected: then 0 <= n <= n(n-1)/2
+
+Dense / Sparse graphs: Refers to the number of edges and it's relation to the maximum or minimum possible edges.
+  + Adjacency Matrix: Used for storage of dense graphs.
+  + Adjacency List: Used for storage of sparse graphs.
+
+Walk / Path: a sequence of vertices where each adjacent pair is connected by an edge.
+  + Simple Path: a walk in which no vertices (and thus no edges) are repeated.
+  + Trail: a walk where no edges are repeated.
+  + Closed: starts and ends on the same vertex and length of walk > 0 (length of edges).
+  + Cycle: a closed walk where there's no repetition of vertex or edges.
+    + Acyclic: trees, since the edge would be repeated.
+      + DAG: directed acyclic graph.
+
+Connected graph: if there is a path from any vertex to any other vertex (strongly connected for directed).
 
 
 Note: starting node is called origin and the end is the destination.
