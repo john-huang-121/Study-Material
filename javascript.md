@@ -1093,3 +1093,320 @@ function isEqual(a, b) {
 
 The environment, or world, that the function executes in. Default scope in JS is `Window` object of the page.
 
+## Synchronous vs Async
+
+In the context of software: if a program does something asynchronously, it starts it and then doesn't wait for the result. When the thing is done, something else (like the operating system) will tell the program, and then the program can use the result.
+
+An analogy: Let's say you need to get your car fixed. You could take it to the repair shop, and wait there until it's fixed, then drive off - this is synchronous.
+
+Alternatively, you could take it to the repair shop, leave it with them, and find something to do. When they call you to tell you the car is fixed, you go back and get the car. That's asynchronous.
+
+Asynchronous programming is most useful when talking to a slow device (like a hard drive), or especially when communicating over a network (which is much slower than a hard drive).
+
+In the context of computers this translates into executing a process or task on another "thread." A thread is a series of commands (a block of code) that exists as a unit of work. The operating system can manage multiple threads and assign a thread a piece ("slice") of processor time before switching to another thread to give it a turn to do some work. At its core (pardon the pun), a processor can simply execute a command, it has no concept of doing two things at one time. The operating system simulates this by allocating slices of time to different threads.
+
+Now, if you introduce multiple cores/processors into the mix, then things CAN actually happen at the same time. The operating system can allocate time to one thread on the first processor, then allocate the same block of time to another thread on a different processor. All of this is about allowing the operating system to manage the completion of your task while you can go on in your code and do other things.
+
+## true < 2 < 3
+
+Since JavaScript has type coersion, in this order of priority (string, integer, boolean), the true gets converted to 
+## Function.prototype
+
+`new F()` creates a new object with the object's `[[Prototype]]` set to F.prototype.
+
+In other words, if F has a prototype property with a value of the object type, then new operator uses it to set [[Prototype]] for the new object.
+
+Please note that F.prototype here means a regular property named "prototype" on F. It sounds something similar to the term “prototype”, but here we really mean a regular property with this name.
+
+Here’s the example:
+```JavaScript
+let animal = {
+  eats: true
+};
+
+function Rabbit(name) {
+  this.name = name;
+}
+
+Rabbit.prototype = animal;
+
+let rabbit = new Rabbit("White Rabbit"); //  rabbit.__proto__ == animal
+
+alert( rabbit.eats ); // true
+Setting Rabbit.prototype = animal literally states the following: "When a new Rabbit is created, assign its [[Prototype]] to animal
+```
+
+default prototype, constructor property
+
+Every function has the "prototype" property even if we don’t supply it.
+
+The default "prototype" is an object with the only property constructor that points back to the function itself.
+
+Like this:
+```JavaScript
+function Rabbit() {}
+
+/* default prototype
+Rabbit.prototype = { constructor: Rabbit };
+*/
+```
+
+#### …JavaScript itself does not ensure the right "constructor" value.
+
+Yes, it exists in the default "prototype" for functions, but that’s all. What happens with it later – is totally on us.
+
+In particular, if we replace the default prototype as a whole, then there will be no "constructor" in it.
+
+For instance:
+```javascript
+function Rabbit() {}
+Rabbit.prototype = {
+  jumps: true
+};
+
+let rabbit = new Rabbit();
+alert(rabbit.constructor === Rabbit); // false
+```
+
+So, to keep the right "constructor" we can choose to add/remove properties to the default "prototype" instead of overwriting it as a whole:
+
+```javascript
+function Rabbit() {}
+
+// Not overwrite Rabbit.prototype totally
+// just add to it
+Rabbit.prototype.jumps = true
+// the default Rabbit.prototype.constructor is preserved
+```
+
+Or, alternatively, recreate the constructor property manually:
+
+```javascript
+Rabbit.prototype = {
+  jumps: true,
+  constructor: Rabbit
+};
+
+// now constructor is also correct, because we added it
+```
+
+## Prototypal Inheritance
+
+[[prototype]] is a special hidden property in objects that is either `null` or references another object (that object is the prototype). When a missing property is being read, JS takes it automatically from the prototype. The property [[Prototype]] is internal and hidden, but there are many ways to set it.
+
+One way to set __prototype__:
+
+```javascript
+let animal = {
+  eats: true
+};
+let rabbit = {
+  jumps: true
+};
+
+rabbit.__proto__ = animal;
+```
+
+Please note that __proto__ is not the same as [[Prototype]]. That’s a getter/setter for it. We’ll talk about other ways of setting it later, but for now __proto__ will do just fine.
+
+If we look for a property in rabbit, and it’s missing, JavaScript automatically takes it from animal.
+
+Limitations:
+1) The references can’t go in circles. JavaScript will throw an error if we try to assign __proto__ in a circle.
+2) The value of __proto__ can be either an object or null. All other values (like primitives) are ignored.
+
+The prototype is only used for reading properties.
+
+For data properties (not getters/setters) write/delete operations work directly with the object.
+
+In the example below, we assign its own walk method to rabbit:
+```javascript
+let animal = {
+  eats: true,
+  walk() {
+    /* this method won't be used by rabbit */
+  }
+};
+
+let rabbit = {
+  __proto__: animal
+};
+
+rabbit.walk = function() {
+  alert("Rabbit! Bounce-bounce!");
+};
+
+rabbit.walk(); // Rabbit! Bounce-bounce!
+```
+
+From now on, rabbit.walk() call finds the method immediately in the object and executes it, without using the prototype:
+
+For getters/setters – if we read/write a property, they are looked up in the prototype and invoked.
+
+For instance, check out admin.fullName property in the code below:
+```javascript
+ let user = {
+  name: "John",
+  surname: "Smith",
+
+  set fullName(value) {
+    [this.name, this.surname] = value.split(" ");
+  },
+
+  get fullName() {
+    return `${this.name} ${this.surname}`;
+  }
+};
+
+let admin = {
+  __proto__: user,
+  isAdmin: true
+};
+
+alert(admin.fullName); // John Smith (*)
+
+// setter triggers!
+admin.fullName = "Alice Cooper"; // (**)
+```
+
+Here in the line (*) the property admin.fullName has a getter in the prototype user, so it is called. And in the line (**) the property has a setter in the prototype, so it is called.
+
+Note: this reference always refers to the object before the dot. The actual reference is not changed up the prototype chain.
+
+## Why are two hamsters full?
+
+We have two hamsters: speedy and lazy inheriting from the general hamster object.
+
+When we feed one of them, the other one is also full. Why? How to fix it?
+```javascript
+ let hamster = {
+  stomach: [],
+
+  eat(food) {
+    this.stomach.push(food);
+  }
+};
+
+let speedy = {
+  __proto__: hamster
+};
+
+let lazy = {
+  __proto__: hamster
+};
+
+// This one found the food
+speedy.eat("apple");
+alert( speedy.stomach ); // apple
+
+// This one also has it, why? fix please.
+alert( lazy.stomach ); // apple
+```
+
+Let’s look carefully at what’s going on in the call speedy.eat("apple").
+
+The method speedy.eat is found in the prototype (=hamster), then executed with this=speedy (the object before the dot).
+
+Then this.stomach.push() needs to find stomach property and call push on it. It looks for stomach in this (=speedy), but nothing found.
+
+Then it follows the prototype chain and finds stomach in hamster.
+
+Then it calls push on it, adding the food into the stomach of the prototype.
+
+So all hamsters share a single stomach!
+
+Every time the stomach is taken from the prototype, then stomach.push modifies it “at place”.
+
+Please note that such thing doesn’t happen in case of a simple assignment this.stomach=:
+```javascript
+let hamster = {
+  stomach: [],
+
+  eat(food) {
+    // assign to this.stomach instead of this.stomach.push
+    this.stomach = [food];
+  }
+};
+
+let speedy = {
+   __proto__: hamster
+};
+
+let lazy = {
+  __proto__: hamster
+};
+
+// Speedy one found the food
+speedy.eat("apple");
+alert( speedy.stomach ); // apple
+
+// Lazy one's stomach is empty
+alert( lazy.stomach ); // <nothing>
+```
+
+Now all works fine, because this.stomach= does not perform a lookup of stomach. The value is written directly into this object.
+
+Also we can totally evade the problem by making sure that each hamster has their own stomach:
+
+```javascript
+let hamster = {
+  stomach: [],
+
+  eat(food) {
+    this.stomach.push(food);
+  }
+};
+
+let speedy = {
+  __proto__: hamster,
+  stomach: []
+};
+
+let lazy = {
+  __proto__: hamster,
+  stomach: []
+};
+
+// Speedy one found the food
+speedy.eat("apple");
+alert( speedy.stomach ); // apple
+
+// Lazy one's stomach is empty
+alert( lazy.stomach ); // <nothing>
+As a common solution, all properties that describe the state of a particular object, like stomach above, are usually written into that object. That prevents such problems.
+```
+
+## Introduction to JavaScript, environments and what it can do
+
+programs written in this language are called scripts, which are written directly in the html and executed when the page loads. Scripts are provided and executed in plain text, so it doesn't need preparation or compilation to run.
+
+JavaScript can also be executed in the server or any device with a special program called the `JavaScript engine`.
+The engine applies optimizations at each step of the process. It even watches the compiled script as it runs, analyzes the data that flows through it, and applies optimizations to the machine code based on that knowledge. When it’s done, scripts run quite fast.
+  1) The engine (embedded if it’s a browser) reads (“parses”) the script.
+  2) Then it converts (“compiles”) the script to the machine language.
+  3) And then the machine code runs, pretty fast.
+  + V8: in Chrome and Opera
+  + SpiderMonkey: Firefox
+  + SquirrelFish: Safari
+  + ChakraCore: Microsoft Edge
+
+"safe" language: does not provide low-level access to memory or CPU because it was created for the browser, which does not use it.
+  + Depends on the environment it runs in. Node.js allows read and write access, network requests, etc.
+
+JS has limited capabilities on the browser to protect users from malicious webpages.
+  + Can't read/write, copy, or access OS functions on user's HD. Modern JS allows for file access through file drop or        selecting a file through the input tag
+  + Different tabs/windows don't know about each other and cannot access each other if they're different sites. This is       called `Same origin policy`
+    - to work around that, the only way is to have both websites have code for data exchange.
+
+What makes JS unique (the onlybrowser to have all three)
+  + Full integration with HTML/CSS.
+  + Simple things are done simply.
+  + Support by all major browsers and enabled by default.
+
+Modern tools make the transpilation very fast and transparent, actually allowing developers to code in another language and auto-converting it “under the hood”.
+
+Examples of such languages:
+
+CoffeeScript is a “syntactic sugar” for JavaScript. It introduces shorter syntax, allowing us to write clearer and more precise code. Usually, Ruby devs like it.
+TypeScript is concentrated on adding “strict data typing” to simplify the development and support of complex systems. It is developed by Microsoft.
+Dart is a standalone language that has its own engine that runs in non-browser environments (like mobile apps). It was initially offered by Google as a replacement for JavaScript, but as of now, browsers require it to be transpiled to JavaScript just like the ones above.

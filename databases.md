@@ -10,4 +10,3 @@ Used in cases where items indexed are composite values, and the query needs to s
 Searches through partial matches on multiple columns or within an array.
 
 On Ubuntu: sudo apt-get install postgresql-contrib-9.3
-

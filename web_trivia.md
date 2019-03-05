@@ -35,3 +35,7 @@ A set of design principles for network communication to be more scalable and fle
 
 6) Code on Demand (optional): ability for servers to send executeable code to clients. This happens in HTML's `<script>` tag.
    When an HTML document is loaded, the browser automatically fetches the JavaScript from the server and executes it locally.
+
+   ## HTML script
+
+   If the script tag has a src, then none of it's inner script will run.

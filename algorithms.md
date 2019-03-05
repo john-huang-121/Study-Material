@@ -59,6 +59,9 @@ puts merge_sort.sort([4, 92, 1, 39, 19, 93, 49, 10].shuffle) # => [1, 4, 10, 19,
 # 9. Keep doing that until it's done.
 ```
 
+Time Complexity: O(n log(n))
+Space Complexity: O(n)
+
 ## BFS
 
 ```JavaScript
@@ -93,4 +96,120 @@ const DFS = (rootNode) => {
 
 ## Binary Search
 
+ONLY FOR A SORTED ARRAY
+A binary search works by checking if our search value is more than, less than, or equal to the middle value in our array:
+
++ If it’s less than, we can remove the right half of the array.
++ If it’s more than, we can remove the left half of the array.
++ If it’s equal to, we return the value
+
+recursive
+```javascript
+Array.prototype.binarySearch = function (target, preservedIndex = 0) {
+  if (this.length < 1) {
+    return -1;
+  }
+
+  let middleIndex = Math.floor((this.length - 1)/2);
+
+  if (this[middleIndex] === target) {
+    return middleIndex + preservedIndex;
+  } else if (this[middleIndex] > target) {
+    return this.slice(0, middleIndex).binarySearch(target, preservedIndex);
+  } else {
+    return this.slice(middleIndex + 1, this.length).binarySearch(target, preservedIndex + middleIndex + 1);
+  }
+}
+```
+
+
+
+iterative
+```javascript
+Array.prototype.binarySearch = function (target) {
+  let firstIndex = 0,
+      lastIndex = this.length - 1,
+      middleIndex = Math.floor((lastIndex + firstIndex)/2);
+
+  while (this[middleIndex] != target && firstIndex < lastIndex) {
+    if (target < this[middleIndex]) {
+      lastIndex = middleIndex - 1;
+    } else if (target > this[middleIndex]) {
+      firstIndex = middleIndex + 1;
+    }
+    middleIndex = Math.floor((lastIndex + firstIndex)/2);
+  }
+
+  return (this[middleIndex] != target ? -1 : middleIndex) //return -1 if nothing is found, else return the index
+}
+```
+
+Time Complexity: O(log(n))
+Space Complexity: 
+  + Iterative: O(1)Event Loop
+  + Recursive: O(log(n))
+
 ## Quicksort
+
++ Choose a pivot element (usually the first)
++ For each remaining element of the array
+  - if less than pivot, put in left half of the array
+  - if more than pivot, put in right half of the array
++ Recursively call quickSort on left and right halves and return the full sorted array
+
+recursive
+```javascript
+Array.prototype.quickSort = function (comparator) {
+  if (this.length <= 1) {
+    return this;
+  }
+
+  if (typeof comparator !== 'function') {
+    comparator = (x, y) => {
+      if (x === y) {
+        return 0;
+      } else if (x < y) {
+        return -1;
+      } else {
+        return 1;
+      }
+    }
+  }
+
+  const pivot = this[0];
+  const left = [];
+  const right = [];
+
+  for (let i = 1; i < this.length; i++) {
+    if (comparator(this[i], pivot) === -1) {
+      left.push(this[i]);
+    } else {
+      right.push(this[i]);
+    }
+  }
+  
+  return left.quickSort(comparator).concat([pivot]).concat(right.quickSort(comparator));
+}
+```
+
+iterative (Hoare's Partitioning scheme)
+```javascript
+Array.prototype.quickSort = function (comparator) {
+  if (typeof comparator !== 'function') {
+    comparator = (x, y) => {
+      if (x === y) {
+        return 0;
+      } else if (x < y) {
+        return -1;
+      } else {
+        return 1;
+      }
+    }
+  }
+}
+```
+
+Time Complexity:
+  + Best: O(n log(n))
+  + Worst: O(n^2) <!-- Choosing first or last element in an already sorted array -->
+Space Complexity: O(log(n))
