@@ -827,11 +827,15 @@ This operator causes the values in the array to be expanded, or “spread”, in
 
 ## The Event Loop
 
-Everytime a setTimeout or an async operation is performed it's placed in the Event Table (a data structure that knows to sends a notice after for a certain action after a certain event ie. timeout, click, mousemove), which then sends them to the Event Queue.
+Everytime a setTimeout or an async operation is performed it's placed in the Event Table (a data structure that knows to sends a notice after for a certain action after a certain event ie. timeout, click, mousemove), which then sends them to Event Loopthe Event Queue.
 
 The Event Queue is like the queue data structure in which it keeps the order. The event loop is constantly running process that checks if the call stack is empty. If it's empty, it then looks into the event queue for the next function to pass into the call stack.
 
+The cycle goes: call stack -> Web APIs (DOM, ajax, setTimeout, ie async functions) -> callback queue -> call stack
+
 Note: Recursions can be exploited with setTimeout to stop infinite callstacks from building up.
+
+(What is the Event Loop)[https://www.youtube.com/watch?v=8aGhZQkoFbQ]
 
 ## Top 10 ES6 features
 
@@ -1410,3 +1414,7 @@ Examples of such languages:
 CoffeeScript is a “syntactic sugar” for JavaScript. It introduces shorter syntax, allowing us to write clearer and more precise code. Usually, Ruby devs like it.
 TypeScript is concentrated on adding “strict data typing” to simplify the development and support of complex systems. It is developed by Microsoft.
 Dart is a standalone language that has its own engine that runs in non-browser environments (like mobile apps). It was initially offered by Google as a replacement for JavaScript, but as of now, browsers require it to be transpiled to JavaScript just like the ones above.
+
+## Blocking
+
+Code that is slow and in the call stack.
