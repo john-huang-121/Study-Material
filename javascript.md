@@ -827,7 +827,7 @@ This operator causes the values in the array to be expanded, or “spread”, in
 
 ## The Event Loop
 
-Everytime a setTimeout or an async operation is performed it's placed in the Event Table (a data structure that knows to sends a notice after for a certain action after a certain event ie. timeout, click, mousemove), which then sends them to Event Loopthe Event Queue.
+Everytime a setTimeout or an async operation is performed it's placed in the Event Table (a data structure that knows to sends a notice after for a certain action after a certain event ie. timeout, click, mousemove), which then sends them to the Event Queue.
 
 The Event Queue is like the queue data structure in which it keeps the order. The event loop is constantly running process that checks if the call stack is empty. If it's empty, it then looks into the event queue for the next function to pass into the call stack.
 
