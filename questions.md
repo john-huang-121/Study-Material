@@ -92,3 +92,20 @@ let rangeSort = (numArr) => {
   return result;
 }
 ```
+
+## Transpose a 2D array
+
+mutates the array. set up a result variable if you dont want to mutate.
+
+```javascript
+function transpose(arr) {
+
+  for (let i = 0; i < arr.length; i++) {
+    for (let j = i; j < arr[i].length; j++) {
+      [arr[i][j], arr[j][i]] = [arr[j][i], arr[i][j]];
+    }
+  }
+
+  return arr;
+}
+```

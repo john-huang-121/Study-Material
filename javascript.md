@@ -579,7 +579,7 @@ Hence the output will be as above.
 1
 undefined
 2
-var statements are hoisted (without their value initialization) to the top of the global or function scope it belongs to, even when it’s inside a with or catch block. However, the error’s identifier is only visible inside the catch block. It is equivalent to:
+var statements are hoisted (without their value initialization) to the top of the global or function scope it belongs to, even when it’s inside a with or catch block, but without it's value assignments. However, the error’s identifier is only visible inside the catch block. It is equivalent to:
 ```
 (function () {
     var x, y; // outer and hoisted
@@ -1418,3 +1418,28 @@ Dart is a standalone language that has its own engine that runs in non-browser e
 ## Blocking
 
 Code that is slow and in the call stack.
+
+## 7 Built-in types
+
+null, undefined, boolean, number, string, object, and symbol. All these are primitives except for object.
+
+What really happens under the hood is that if you are comparing a boolean with something other than a boolean, JavaScript coerces that boolean to a number and compares.
+
+## == vs ===
+
+== checks for equality with coersion and === checks for equality without coersion ('strict equality').
+
+## Value vs Reference
+
+Simple values (also known as primitives) are always assigned by value-copy: null, undefined , boolean, number, string and ES6 symbol.
+
+Compound values always create a copy of the reference on assignment: objects, which includes arrays, and functions.
+
+To copy a compound value by value, you need to make a copy of it. The reference does not point to the original value.
+
+```javascript
+const copy = c.slice()    // 'copy' references to a new value
+console.log(c);           // [1,2,3,4]
+console.log(copy);        // [1,2,3,4]
+console.log(c === copy);  // false
+```
