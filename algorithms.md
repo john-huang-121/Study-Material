@@ -88,8 +88,9 @@ const DFS = (rootNode) => {
   while (stack.length > 0) {
     let current = stack.pop();
 
-    stack.push(current.left);
+    //push right then left because FIFO
     stack.push(current.right);
+    stack.push(current.left);
   }
 }
 ```

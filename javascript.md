@@ -371,9 +371,15 @@ for (var i = 0; i < 5; i++ ){
 
 The code sample shown will not display the values 0, 1, 2, 3, and 4 as might be expected; rather, it will display 5, 5, 5, 5, and 5.
 
+Immediately Invoked Function Expression (IIFE): function you call immediately after you invoke it. Helps maintain scope.
 The reason for this is that each function executed within the loop will be executed after the entire loop has completed and all will therefore reference the last value stored in i, which was 5.
 
 Closures can be used to prevent this problem by creating a unique scope for each iteration, storing each unique value of the variable within its scope, as follows:
+
+Enables you to attach private data to a function.
+Creates fresh environments.
+Avoids polluting the global namespace.
+
 ```
 for (var i = 0; i < 5; i++) {
     (function(x) {
@@ -827,9 +833,25 @@ This operator causes the values in the array to be expanded, or “spread”, in
 
 ## The Event Loop
 
+JavaScript is a single-threaded programming language. This means that the JavaScript engine can only process a piece of code at a time. One of its main consequences is that when JavaScript encounters a piece of code that takes a long time to process, it will block all code after that from running.
+
+JavaScript uses a data structure that stores information about active functions named Call Stack. A Call Stack is like a pile of books. Every book that goes into that pile sits on top of the previous book. The last book to go into the pile will be the first one removed from it, and the first book added to the pile will be the last one removed.
+
+The solution to executing heavy pieces of code without blocking anything is asynchronous callback functions. These functions are executed later — asynchronously.
+
+The asynchronous process begins with an asynchronous callback functions placed into a Heap or region of memory. You can think of the Heap as an Event Manager. The Call Stack asks the Event Manager to execute a specific function only when a certain event happens. Once that event happens, the Event Manager moves the function to the Callback Queue. Note: When the Event Manager handles a function, the code after that is not blocked and JavaScript continues its execution.
+
+The Event Loop handles the execution of multiple pieces of your code over time. The Event Loop monitors the Call Stack and the Callback Queue.
+
+The Call Stack is constantly checked whether it is empty or not. When it is empty, the Callback Queue is checked if there is a function waiting to be invoked. When there is a function waiting, the first function in the queue is pushed into the Call Stack, which will run it. This checking process is called a ‘tick’ in the Event Loop.
+
+
+
+
 Everytime a setTimeout or an async operation is performed it's placed in the Event Table (a data structure that knows to sends a notice after for a certain action after a certain event ie. timeout, click, mousemove), which then sends them to the Event Queue.
 
 The Event Queue is like the queue data structure in which it keeps the order. The event loop is constantly running process that checks if the call stack is empty. If it's empty, it then looks into the event queue for the next function to pass into the call stack.
+
 
 The cycle goes: call stack -> Web APIs (DOM, ajax, setTimeout, ie async functions) -> callback queue -> call stack
 
@@ -838,7 +860,7 @@ Note: Recursions can be exploited with setTimeout to stop infinite callstacks fr
 (What is the Event Loop)[https://www.youtube.com/watch?v=8aGhZQkoFbQ]
 
 ## Top 10 ES6 features
-
+Event Loop
 1) Default Parameters in ES6
   var link = function (height = 50, color = 0) {} - like ruby
 
@@ -1443,3 +1465,27 @@ console.log(c);           // [1,2,3,4]
 console.log(copy);        // [1,2,3,4]
 console.log(c === copy);  // false
 ```
+
+## Function expression vs Function declaration
+
+functions declared on a variable are not hoisted.
+
+## Debounce and Throttle
+
+Can be found in Lodash
+
+Debounce will bunch a series of sequential calls to a function into a single call to that function. It ensures that one notification is made for an event that fires multiple times.
+
+Throttle will delay executing a function. It will reduce the notifications of an event that fires multiple times.
+
+A far-fetched metaphor, but maybe could also help.
+
+You have a friend named Chatty who likes to talk with you via IM. Assuming when she talks she sends a new message every 5 seconds, while your IM application icon is bouncing up and down, you can take the...
+
+Naive approach: check every message as long as it arrives. When your app icon bounces, check. It's not the most effective way, but you are always up-to-date.
+Throttle approach: you check once every 5 minutes (when there are new ones). When new message arrives, if you have checked anytime in the last 5 minutes, ignore it. You save your time with this approach, while still in the loop.
+Debounce approach: you know Chatty, she breaks down a whole story into pieces, sends them in one message after another. You wait until Chatty finishes the whole story: if she stops sending messages for 5 minutes, you would assume she has finished, now you check all.
+
+## Web/Browser Render
+
+The browser tries to render at 60fps or 16 milliseconds, but if there is a synchronous function running, it blocks the render until it's done.

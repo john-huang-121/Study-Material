@@ -77,6 +77,124 @@ Note: this is a graph traversal, going to each node of graphs.
 
 ## Trees and Tries (type of graph)
 
+hierarchical tree structure. Each node will have a root value value and a list of references to other nodes, called child nodes. From a graph view, a tree is a directed acyclic graph which has `n` nodes and `n - 1` edges.
+
+Binary tree nodes can have at most two children nodes(left and right child).
+
+Preorder traversal = visit the root first. Then traverse the left subtree and then the right.
+  - Use Stack data structure.
+
+```javascript
+/*
+ * Definition for a binary tree node.
+ * function TreeNode(val) {
+ *     this.val = val;
+ *     this.left = this.right = null;
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @return {number[]}
+ */
+//  iterative
+var preorderTraversal = function(root) {
+    if (!root) return [];
+    let result = [];
+    let stack = [root];
+
+    while (stack.length > 0) {
+        let currentNode = stack.pop();
+        result.push(currentNode.val);
+        if (currentNode.right) stack.push(currentNode.right);
+        if (currentNode.left) stack.push(currentNode.left);
+    }
+
+    return result;
+};
+
+// recursive
+
+var preorderTraversal = function(root, arr = []) {
+  if (root) {
+      arr.push(root.val);
+      preorderTraversal(root.left, arr);
+      preorderTraversal(root.right, arr);
+  };
+    
+  return arr;
+};
+```
+
+In-order traversal = traverse the left subtree first. Then visit the root. Then traverse the right subtree.
+  - In a binary search tree, this will generate a sorted order.
+
+```javascript
+
+// iterative
+
+var inorderTraversal = function(root) {
+    const stack = [];
+    let curr = root;
+    let results = []; 
+    while (stack.length > 0 || curr != null) {
+        while(curr != null){
+            stack.push(curr);
+            curr = curr.left;
+        }
+        curr =  stack.pop();
+        results.push(curr.val);
+        curr = curr.right;
+    }
+    return results;
+};
+
+// recursive
+var inorderTraversal = function(root, arr = []) {
+    if (root) {
+        inorderTraversal(root.left, arr);
+        arr.push(root.val);
+        inorderTraversal(root.right, arr);
+    }
+    
+    return arr;
+};
+```
+
+Post-order traversal = traverse the left subtree, then the right subtree. Finally reaching the root node.
+  - When deleting nodes in a tree, deletion process is post-order (deletes left and right children before the node)
+
+```javascript
+// iterative
+
+var postorderTraversal = function(root) {
+    if (!root) return [];
+    
+    let queue = [root],
+        result = [];
+    
+    while (queue.length > 0) {
+        let currentNode = queue.shift();
+        
+        result.unshift(currentNode.val);
+        
+        if (currentNode.left) queue.unshift(currentNode.left);
+        if (currentNode.right) queue.unshift(currentNode.right);
+    }
+    
+    return result;
+};
+// recursive
+var postorderTraversal = function(root, arr = []) {
+    if (root) {
+        postorderTraversal(root.left, arr);
+        postorderTraversal(root.right, arr);
+        arr.push(root.val);
+    }
+    
+    return arr;
+};
+```
+
 ## Stacks
 
 ## Queues
