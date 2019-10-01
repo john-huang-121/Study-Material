@@ -47,3 +47,7 @@ The first two could silence the event listeners associated with it, so it's best
 
 https://appitventures.com/blog/styling-checkbox-css-tips/
 https://paulund.co.uk/how-to-style-a-checkbox-with-css
+
+## CSS Linear Gradient
+
+https://medium.com/@patrickbrosset/do-you-really-understand-css-linear-gradients-631d9a895caf
