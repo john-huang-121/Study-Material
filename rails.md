@@ -48,3 +48,40 @@ Sprockets concatenates all JavaScript files into one master .js file and all CSS
 With the asset pipeline, the preferred location for these assets is now the app/assets directory. Files in this directory are served by the Sprockets middleware.
 
 In production, Rails precompiles these files to public/assets by default. The precompiled copies are then served as static assets by the web server. The files in app/assets are never served directly in production.
+
+## if __FILE__ == $PROGRAM_NAME
+
+This checks to see if the currently running program ($PROGRAM_NAME) is the same as the current file (primes.rb). If so, then this is being invoked as a script, so we should kick things off. Otherwise, we're loading it as part of some other program (like irb or Pry), and we shouldn't do more than load the method definitions so that someone else may use them.
+
+## Using byebug gem as a debugger
+
+step: (or s) is the command that we use to step into a method call
+
+next: (or n), to advance if there's no method call
+
+continue: (or c) to tell the debugger to keep running the code.
+
+type `list=` to re-display where you are paused in the source code.
+
+`display some_variable` to track variables through the debug
+
+`where` command allows you to view the stack trace without having to raise an error. Suppose that you have a method that is called from different parts of your program. Usually the method works as expected, but every once in a while your method raises an error or produces an unexpected result. The method itself might be fine, but maybe it's being called with bad parameters. However, you don't want to go to all of the different places in your program where the method is called and put a debugger statement at each one to diagnose the problem, especially if the method calls are spread across different classes and files.
+
+It would be much easier if we could put a single debugger within the method in question, and then look back to see where that method was actually called in the code. Then, once you know where the problem originated, you can fix it.
+
+```ruby
+require 'byebug'
+
+def prime?(num)
+  debugger # drops us into the debugger right after this point
+
+  (1..num).each do |idx|
+    if num % idx == 0
+      return false
+    end
+  end
+end
+
+def primes
+  # ... etc.
+```
