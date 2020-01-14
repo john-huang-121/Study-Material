@@ -30,3 +30,23 @@ params[:user] && params[:user][:choices] || []
 ```
 
 https://tiagoamaro.com.br/2016/08/27/ruby-2-3-dig/
+
+## Setting up Rake tasks
+
+Rake is a task runner.
+
+```ruby
+desc "Print reminder about eating more fruit."
+task :apple do
+  puts "Eat more apples!"
+
+
+#running the task in terminal
+
+rake apple
+# "Eat more apples!"
+```
+
+
+read more about the functionalities here:
+https://www.rubyguides.com/2019/02/ruby-rake/
