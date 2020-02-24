@@ -89,18 +89,73 @@ function foo2() {
 When invoked, foo2 will return undefined because while semicolons are technically optional in JS, a semicolon is 
 automatically added to the end of the return when encountered without open brackets
 
+Note: When working with 'use strict', never concatenate strict and nonstrict files together (because of packaging order issues)
+or concat files by wrapping their bodies in an IIFE.
+
+## Semicolon Insertion
+
+Automatic semicolon insertion has its pitfalls and follows these rules:
+
+1) Semicolons are only inserted before a } token, after one or more newlines, or at the end of program input.
+(you can only leave out semicolons at the end of the line, block, or program)
+2) When next input token cannot be parsed. As an error correction mechanism.
+
+```js
+a = b
+(f());
+// parses as
+a = b(f());
+
+// but
+a = b
+f();
+// parses as two separate functions because
+a = b f(); // is an error
+```
+When programs are concatenated, semicolons are not added to the end of the program.
+
+
+3) Semicolons are never inserted as separators in the head of a for loop or as empty statements. (let i = 0; i < something; i++) and
+loops with an empty body (function infiniteLoop() { while(true); })
+
+Note: even if you always add semicolons, there could be dangers. `return {};` returns a new object, but
+```js
+return // parses as 3 separate statements
+{};
+
+return; // like so
+{}
+;
+```
+These are known as 'restricted productions'. Other cases of res. prod. are: `throw` statements, `break` or `continue` with explicit label, `++` or `--`
+
+## Unicode
+
+Unicode basics = Every unit of text of all the world's writing systems is assigned a unique integer between 0 and 1,114,111, known as a 'code point'. This is just another form of text encoding like ASCII. While ASCII maps each index to a unique binary representation, Unicode allows multiple different binary encodings of code points. Different encodings make trade-offs between the amount of storage required for a strign and the speed of operations such as indexing into a string.
+
+Popular standard encodings: UTF-8, UTF-16, UTF-32
+
 ## What is NaN? What is its type? How can you reliably test if a value is equal to NaN?
 
 a NaN property represents a value that is "not a number". This is the result of an operation that could not be performed because one of its operands was a non-numeric or the result is a non-numeric. NaN type is in fact a Number. `console.log(typeof NaN === 'number')` returns true, but `(NaN === NaN)` is false. One solutions is to use the built-in global function `isNaN()`, but it's not perfect. A better way is to use value !== value because it'll only produce true if the value is equal to NaN.
 Note: As of ES6, an new more reliable function Function.isNaN() is more reliable than the old global isNaN()
 
-## What will the code below output? 
-```
-console.log(0.1 + 0.2);
+## Floating-Point Numbers and example?
+
+All javascript numbers are represented by `double-precision floating-point` numbers, the 64-bit encoding IEEE 754 standard, known as `doubles`.
+Doubles can represent integers up to 53 bits of precision, -9,007,199,254,740,992 (-2^53) to 9,007,199,254,740,992 (2^53) are valid doubles.
+
+Bitwise arthmetic operators though, work by converting the numbers into 32-bit big-endian, two's complement integers.
+
+Note: doubles can only represent a finite set of numbers, so rounding can be inaccurate. So doing multiple operations may compound rounding errors.
+A workaround is to only work with integers. (10  20) + 30 = 10 + (20 + 30) without mixing of numbers.
+
+```javascript
+console.log(0.1 + 0.2); // 0.30000...4
 console.log(0.1 + 0.2 == 0.3);
 ```
 
-An educated answer to this question would simply be: “You can’t be sure. it might print out 0.3 and true, or it might not. Numbers in JavaScript are all treated with floating point precision, and as such, may not always yield the expected results.”
+An educated answer to this question would simply be: “You can’t be sure. it might print out 0.3 and true, or it might not. Numbers in JavaScript are all treated as double-precision floating point, and as such, may not always yield the expected results.”
 
 The example provided above is classic case that demonstrates this issue. Surprisingly, it will print out:
 `0.30000000000000004 and false`.
@@ -1437,19 +1492,78 @@ CoffeeScript is a “syntactic sugar” for JavaScript. It introduces shorter sy
 TypeScript is concentrated on adding “strict data typing” to simplify the development and support of complex systems. It is developed by Microsoft.
 Dart is a standalone language that has its own engine that runs in non-browser environments (like mobile apps). It was initially offered by Google as a replacement for JavaScript, but as of now, browsers require it to be transpiled to JavaScript just like the ones above.
 
+## Implicit Coercions
+
+JS is very forgiving when it comes to type errors. Ex:
+
+```js
+3 + true //true
+```
+
+Normally for statically typed languages, the above statement would not even be allowed to run. Javascript `+` operators do both concat and addition,
+so in differently typed values, it likes to convert into strings first before doing a comparison. It's also left associative, so it will work from
+left to right in order of operation.
+
+```js
+"2" + 3 // "23"
+3 + "2" // "23"
+1 + 2 + "3" // "33"
+1 + "2" + 3 // "123"
+"17" * 3 // 51
+```
+
+In arthmetic, when values are null, it can also convert into 0. Undefined converts to "NaN". Since "NaN" is the only value not equal to itself,
+one way to test it is to compare its own value to itself.
+
+```js
+var a = NaN;
+a !== a; //true
+var b = 'foo';
+b !== b; //false
+
+// extracted pattern
+function isReallyNan(x) {
+  return x !== x;
+}
+```
+
+Falsey values: false, 0, -0, "", NaN, null, and undefined.
+
+
 ## Blocking
 
 Code that is slow and in the call stack.
 
-## 7 Built-in types
+## 7 Built-in types: Primitives vs Object Wrappers
 
 null, undefined, boolean, number, string, object, and symbol. All these are primitives except for object.
 
 What really happens under the hood is that if you are comparing a boolean with something other than a boolean, JavaScript coerces that boolean to a number and compares.
 
+```js
+var s = new String('hello');
+typeof "hello" // 'string'
+typeof s // 'object'
+```
+
+You can't compare the contents of two string objects using built-in operators.
+
 ## == vs ===
 
 == checks for equality with coersion and === checks for equality without coersion ('strict equality').
+
+```js
+// coercion table
+table
+arg1          |   arg2      |  coercion
+
+null          |  undefined  | none; always true
+null or undef |  others     | none; always false
+prim          | date object | prim => num. Date => prim (toString then valueOf)
+prim          | non-date obj| prim => num. nonDate => prim (valueOf then toString)
+prim          | prim        | prim => num
+```
+
 
 ## Value vs Reference
 
