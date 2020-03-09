@@ -115,6 +115,7 @@ function transpose(arr) {
 Given a string of dots, dashes, and ?, give the possible letters that could be represented in morse code. 
 
 ```ruby
+# --.-.?.-
 def morse_helper(str, arr=[])
   i = 0
 
@@ -164,9 +165,20 @@ def morse_code_decoder(str, morse_code_chart)
 
 end
 
-morse_helper('.??-')
+def morse_code_guesser(str, morse_code_tree)
+  poss_configs = morse_helper(str)
+  guesses = []
 
-morse_code_decoder('-', root) #t
+  poss_configs.each do |guess|
+    guesses.push(morse_code_decoder(guess, morse_code_tree))
+  end
+
+  guesses
+end
+
+morse_code_guesser('.-', root)
+
+# morse_code_decoder('-', root) #t
 # morse_code_decoder('..', root) #a
 # morse_code_decoder('.-', root) #i
 ```
