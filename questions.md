@@ -109,3 +109,64 @@ function transpose(arr) {
   return arr;
 }
 ```
+
+## Morse Code (Binary Tree)
+
+Given a string of dots, dashes, and ?, give the possible letters that could be represented in morse code. 
+
+```ruby
+def morse_helper(str, arr=[])
+  i = 0
+
+  while i < str.length
+    if str[i] == '?'
+      temp1 = str[0...i].concat('.').concat(str[i+1..-1])
+      temp2 = str[0...i].concat('-').concat(str[i+1..-1])
+      morse_helper(temp1, arr)
+      morse_helper(temp2, arr)
+    end
+
+    i +=1
+  end
+
+  arr.push(str) unless str.include?('?')
+
+  arr.uniq
+end
+
+class Node
+  attr_reader :left, :right, :val
+
+  def initialize(left, right, val)
+    @left = left
+    @right = right
+    @val = val
+  end
+end
+
+
+s_node = Node.new(nil, nil, 's')
+u_node = Node.new(nil, nil , 'u')
+a_node = Node.new(nil, nil, 'a')
+i_node = Node.new(s_node, u_node, 'i')
+e_node = Node.new(a_node, i_node, 'e')
+t_node = Node.new(nil, nil, 't')
+root = Node.new(e_node, t_node, nil)
+
+def morse_code_decoder(str, morse_code_chart)
+  return morse_code_chart.val if str == ''
+
+  if str[0] == '.'
+    morse_code_decoder(str[1..-1], morse_code_chart.left)
+  elsif str[0] == '-'
+    morse_code_decoder(str[1..-1], morse_code_chart.right)
+  end
+
+end
+
+morse_helper('.??-')
+
+morse_code_decoder('-', root) #t
+# morse_code_decoder('..', root) #a
+# morse_code_decoder('.-', root) #i
+```

@@ -380,3 +380,41 @@ end
 This way, you separate your code from the formats you respond to. You can tell Rails once which formats you want to handle. You don’t have to repeat them in every action.
 
 Note: In Rails 4.2, there’s a catch: `respond_with` is no longer included. But you can get it back if you install the responders gem. And the responders gem brings some other nice features with it.
+
+
+## RSpec gem
+
+Rails is a very heavy weight dependency, and adds significantly to the startup time from when you run rspec until you get the first feedback from the first spec running. On smaller rails apps, it may add ~3 seconds or so to the boot time; as the rails app grows it can add upwards of 10 seconds.
+
+in our experience, you get an order-of-magnitude more productivity out of a TDD or BDD workflow if you get fast, sub-second feedback from making a change to a file and seeing the results of the tests/specs that are for the code in that file. Configuring RSpec to always load rails (which is what happens when you add --require rails_helper to .rspec) makes it impossible to get this kind of sub-second feedback. Of course, any specs for code that relies on rails will still incur the rails boot time penalty, but the default setup provided by rspec-rails allows you to have some spec files that do not depend on rails that can run very fast (generally, it's a few hundred milliseconds from running rspec path/to/spec until it's done).
+
+
+That said, the default setup isn't necessarily what everyone wants, and you're absolutely correct that it's more convenient to always load rails. It's a question of what you optimize for; we've chosen to provide a default setup that optimizes for a more intentional, sustainable TDD approach, but others may choose to optimize for convenience and that's fine.
+
+Yes, rails_helper is only intended for testing with the Rails test helpers (controller specs, view specs, active record based specs with automatic configuration, etc), a lot of Rubyists write PORO (Plain Old Ruby Object) style code, or PORO compatible within their rails apps too, so separating the config allows them to pick and choose when they start up Rails. This makes normal specs an order of magnitude faster, and doesn't really inconvenience the developer.
+
+
+rspec-rails 3 generates spec_helper.rb and rails_helper.rb. spec_helper.rb is for specs which don't depend on Rails (such as specs for classes in the lib directory). rails_helper.rb is for specs which do depend on Rails (in a Rails project, most or all of them). rails_helper.rb requires spec_helper.rb. So no, don't get rid of rails_helper.rb; require it (and not spec_helper.rb) in your specs.
+
+If you want your non-Rails-dependent specs to enforce that they're non-Rails-dependent, and to run as fast as possible when you run them by themselves, you could require spec_helper.rb rather than rails_helper.rb in those. But it's very convenient to -r rails_helper in your .rspec rather than requiring one helper or the other in each spec file, so that is sure to be a popular approach.
+
+```ruby
+# hello_spec.rb
+
+require 'rspec'
+require 'hello'
+
+describe "#hello_world" do
+  it "returns 'Hello, World!'" do
+    expect(hello_world).to eq("Hello, World!")
+  end
+end
+
+# hello.rb
+
+def hello_world
+  "Hello, World!"
+end
+```
+
+https://github.com/appacademy/curriculum/blob/master/ruby/readings/rspec-syntax.md
