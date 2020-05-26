@@ -116,25 +116,7 @@ Given a string of dots, dashes, and ?, give the possible letters that could be r
 
 ```ruby
 # --.-.?.-
-def morse_helper(str, arr=[])
-  i = 0
-
-  while i < str.length
-    if str[i] == '?'
-      temp1 = str[0...i].concat('.').concat(str[i+1..-1])
-      temp2 = str[0...i].concat('-').concat(str[i+1..-1])
-      morse_helper(temp1, arr)
-      morse_helper(temp2, arr)
-    end
-
-    i +=1
-  end
-
-  arr.push(str) unless str.include?('?')
-
-  arr.uniq
-end
-
+# binary tree to map the morse code
 class Node
   attr_reader :left, :right, :val
 
@@ -145,40 +127,90 @@ class Node
   end
 end
 
+# create the morse tree
+class MorseTree
+  attr_reader :root
+  
+  def initialize
+    @root = self.create
+  end
+  
+  # factory method to populate the tree
+  def create
+    # left side of the morse code tree
+    s_node = Node.new(nil, nil, 'S')
+    u_node = Node.new(nil, nil, 'U')
+    i_node = Node.new(s_node, u_node, 'I')
 
-s_node = Node.new(nil, nil, 's')
-u_node = Node.new(nil, nil , 'u')
-a_node = Node.new(nil, nil, 'a')
-i_node = Node.new(s_node, u_node, 'i')
-e_node = Node.new(a_node, i_node, 'e')
-t_node = Node.new(nil, nil, 't')
-root = Node.new(e_node, t_node, nil)
+    r_node = Node.new(nil, nil, 'R')
+    w_node = Node.new(nil, nil, 'W')
+    a_node = Node.new(r_node, w_node, 'A')
 
-def morse_code_decoder(str, morse_code_chart)
-  return morse_code_chart.val if str == ''
+    e_node = Node.new(i_node, a_node, 'E')
+
+    # right side of the tree
+    d_node = Node.new(nil, nil, 'D')
+    k_node = Node.new(nil, nil, 'K')
+    n_node = Node.new(d_node, k_node, 'N')
+
+    g_node = Node.new(nil, nil, 'G')
+    o_node = Node.new(nil, nil, 'O')
+    m_node = Node.new(g_node, o_node, 'M')
+
+    t_node = Node.new(n_node, m_node, 'T')
+
+    root_node = Node.new(e_node, t_node, nil)
+  end
+end
+
+# tree traversal
+def morse_code_tree_decoder(str, morse_code_tree)
+  return morse_code_tree.val if str == ''
 
   if str[0] == '.'
-    morse_code_decoder(str[1..-1], morse_code_chart.left)
+    morse_code_tree_decoder(str[1..-1], morse_code_tree.left)
   elsif str[0] == '-'
-    morse_code_decoder(str[1..-1], morse_code_chart.right)
+    morse_code_tree_decoder(str[1..-1], morse_code_tree.right)
   end
-
 end
 
-def morse_code_guesser(str, morse_code_tree)
-  poss_configs = morse_helper(str)
-  guesses = []
+def morse_helper(word)
+  return word if !word.include?('?')
+  
+  morse_poss = []
+  i = 0
 
-  poss_configs.each do |guess|
-    guesses.push(morse_code_decoder(guess, morse_code_tree))
+  while i < word.length
+    if word[i] == '?'
+      temp1 = word[0...i].concat('.').concat(word[i+1..-1])
+      temp2 = word[0...i].concat('-').concat(word[i+1..-1])
+      morse_poss.push(morse_helper(temp1))
+      morse_poss.push(morse_helper(temp2))
+    end
+
+    i +=1
   end
-
-  guesses
+  
+  morse_poss
 end
 
-morse_code_guesser('.-', root)
-
-# morse_code_decoder('-', root) #t
-# morse_code_decoder('..', root) #a
-# morse_code_decoder('.-', root) #i
+#the actual method ran
+def possibilities(word)
+  if !word.include?('?')
+    morse_configs = [morse_helper(word)]
+  else
+    #morse_helper needs to be refactored to remove flatten and uniq
+    morse_configs = morse_helper(word).flatten.uniq
+  end
+  
+  result = []
+  morse_tree = MorseTree.new.root
+  
+  # conversion of dots and dashes into letters
+  morse_configs.each do |guess|
+    result.push(morse_code_tree_decoder(guess, morse_tree))
+  end
+  
+  result
+end
 ```
