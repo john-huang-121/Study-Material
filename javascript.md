@@ -900,9 +900,6 @@ The Event Loop handles the execution of multiple pieces of your code over time. 
 
 The Call Stack is constantly checked whether it is empty or not. When it is empty, the Callback Queue is checked if there is a function waiting to be invoked. When there is a function waiting, the first function in the queue is pushed into the Call Stack, which will run it. This checking process is called a ‘tick’ in the Event Loop.
 
-
-
-
 Everytime a setTimeout or an async operation is performed it's placed in the Event Table (a data structure that knows to sends a notice after for a certain action after a certain event ie. timeout, click, mousemove), which then sends them to the Event Queue.
 
 The Event Queue is like the queue data structure in which it keeps the order. The event loop is constantly running process that checks if the call stack is empty. If it's empty, it then looks into the event queue for the next function to pass into the call stack.
@@ -913,6 +910,55 @@ The cycle goes: call stack -> Web APIs (DOM, ajax, setTimeout, ie async function
 Note: Recursions can be exploited with setTimeout to stop infinite callstacks from building up.
 
 (What is the Event Loop)[https://www.youtube.com/watch?v=8aGhZQkoFbQ]
+
+alt:
+JavaScript uses a call stack to manage the execution of functions. When a function is called, it's added to the stack. When the function completes, it's removed from the stack. JavaScript, being single-threaded, can only execute one function at a time.
+
+However, this could be problematic if a function takes a long time to execute (like a network request). This is where the Event Loop comes in.
+
+The Event Loop is a continuous loop that checks if the call stack is empty. If it is, it takes the first task from the task queue (also known as the event queue or the callback queue) and pushes it onto the call stack, which immediately executes it.
+
+JavaScript uses a call stack to manage the execution of functions. When a function is called, it's added to the stack. When the function completes, it's removed from the stack. JavaScript, being single-threaded, can only execute one function at a time.
+
+However, this could be problematic if a function takes a long time to execute (like a network request). This is where the Event Loop comes in.
+
+The Event Loop is a continuous loop that checks if the call stack is empty. If it is, it takes the first task from the task queue (also known as the event queue or the callback queue) and pushes it onto the call stack, which immediately executes it.
+
+
+## Promise
+
+A promise in JavaScript is an object representing the eventual completion or failure of an asynchronous operation. Essentially, it's a returned object to which you attach callbacks, as opposed to passing callbacks into a function.
+
+```javascript
+let promise = new Promise((resolve, reject) => {
+    let condition = true;  // This could be the result of some operation
+
+    // After 1 second, check the condition and resolve or reject the promise
+    setTimeout(() => {
+        if (condition) {
+            resolve('Promise fulfilled!');
+        } else {
+            reject('Promise rejected!');
+        }
+    }, 1000);
+});
+
+// Attach then() and catch() handlers to the Promise
+promise
+    .then(value => {
+        // This will be executed if the promise is resolved
+        console.log(value); // Output: Promise fulfilled!
+    })
+    .catch(error => {
+        // This will be executed if the promise is rejected
+        console.log(error);
+    });
+```
+
+In this example, a promise is created and will either resolve or reject after 1 second, depending on the value of condition. The resolve function is called if the promise is successful, and reject is called if the promise fails.
+The then method is called when the promise is resolved and receives the value passed to the resolve function. Similarly, the catch method is called when the promise is rejected and receives the value passed to the reject function.
+
+For more: https://leetcode.com/problems/sleep/solutions/3525047/sleep/
 
 ## Top 10 ES6 features
 Event Loop

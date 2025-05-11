@@ -103,99 +103,127 @@ var postorderTraversal = function(root, arr = []) {
 
 /* Heaps */
 
-class MinHeap {
-    constructor(data = new Array()) {
-      this.data = data;
-      this.compareVal = (a, b) => a - b;
-      this.heapify();
-    }
-  
-    heapify() {
-      if (this.size < 2) {
-        return;
-      }
-  
-      for (let i = 0; i < this.data.length; i++) {
-        this.percolateUp(i);
-      }
+class Heap {
+	constructor(compare, value) {
+		this.heap = [];
+        this.compare = compare;
+        this.value = value;
+	}
+	
+    leftChild(index) {
+        return index * 2 + 1;
     }
 
-    peek() {
-        if (this.size() === 0) {
-            return null;
-        }
-        return this.data[0];
+    rightChild(index) {
+        return index * 2 + 2;
     }
 
-    // enqueue?
-    offer(value) {
-        this.data.push(value);
-        this.percolateUp(this.size() - 1);
+    parent(index) {
+        return Math.floor((index - 1) / 2);
+    }
+	
+    insert(element) { //log n)
+       this.heap.push(element);
+	   
+       // the index of the element we have just pushed
+       let i = this.heap.length - 1;
+       element.index = i;
+	   
+       this.__bubbleUp(i);
     }
 
-    // dequeue?
-    poll() {
-        if (this.size() === 0) {
-            return null;
-        }
-        const result = this.data[0];
-        const last = this.data.pop();
-        if (this.size() !== 0) {
-            this.data[0] = last;
-            this.percolateDown(0);
-        }
+    __bubbleUp(i) {
+      // if the element is greater than its parent:
+      // swap element with its parent
+      //Bubble Up / Sift Up
+      while(i > 0) {
+        let p = this.parent(i);
 
-        return 0;
-    }
-  
-    percolateUp(index) {
-        while (index > 0) {
-          const parentIndex = (index - 1) >> 1;
-          if (this.compareVal(this.data[index], this.data[parentIndex]) < 0) {
-            this.swap(index, parentIndex);
-            index = parentIndex;
+         if( this.compare(this.heap[p], this.heap[i]) ) {
+                let temp = this.heap[i];
+                this.heap[i] = this.heap[p];
+                this.heap[p] = temp;
+             
+                this.heap[i].index = i;
+                this.heap[p].index = p;
+                i = p;
           } else {
-            break;
+               break;
           }
-        }
-      }
-    
-      percolateDown(index) {
-        const lastIndex = this.size() - 1;
-        while (true) {
-          const leftIndex = index * 2 + 1;
-          const rightIndex = index * 2 + 2;
-          let findIndex = index;
-    
-          if (
-            leftIndex <= lastIndex &&
-            this.compareVal(this.data[leftIndex], this.data[findIndex]) < 0
-          ) {
-            findIndex = leftIndex;
+       }
+     }
+	 
+	 extractMax() {
+         if(this.heap.length === 1)
+             return this.heap.pop();
+
+        let data = this.heap;
+
+        // stroing maximum value
+        let root = data[0];
+         
+        // making root equal to the last element
+        let end = data.pop();
+
+        data[0] = end;
+        data[0].index = 0;
+         
+        let eIdx = data.length - 1;
+
+        // correctly re-position heap
+        // as root is not following max-heap property
+        this.__siftDown(0, eIdx);
+
+        return root;
+	 }
+	 
+     __siftDown(start, end) {//O(log n)
+         let left = this.leftChild(start);
+         let right = this.rightChild(start);
+
+         let largest;
+
+         if(
+             (left <= end) && 
+             this.heap[start] &&
+             this.heap[left] &&
+             ( this.compare(this.heap[start], this.heap[left]) )
+           ) {
+             largest = left
+            } else  {
+                 largest = start;
           }
+
+         if(
+             (right <= end) && 
+             this.heap[largest] && 
+             this.heap[right] && 
+             ( this.compare(this.heap[largest], this.heap[right]) )
+         ) {
+             largest = right;
+         }
+
+         if(largest !== start) {
+             const tmp = this.heap[largest];
+             this.heap[largest] = this.heap[start];
+             this.heap[start] = tmp;
+             
+             this.heap[largest].index = largest;
+             this.heap[start].index = start;
+             
+             this.__siftDown(largest, end);
+         }
+     }
     
-          if (
-            rightIndex <= lastIndex &&
-            this.compareVal(this.data[rightIndex], this.data[findIndex]) < 0
-          ) {
-            findIndex = rightIndex;
-          }
-    
-          if (index !== findIndex) {
-            this.swap(index, findIndex);
-            index = findIndex;
-          } else {
-            break;
-          }
-        }
-      }
-    
-      swap(index1, index2) {
-        [this.data[index1], this.data[index2]] = [this.data[index2], this.data[index1]];
-      }
-    
-      size() {
-        return this.data.length;
-      }
+    remove(pos) {
+        this.heap[pos].price = this.value;
+        this.__bubbleUp(pos);
+        this.extractMax();
+    }
+	 
+     peek() {
+         // the root is always the highest priority item
+         return this.heap[0];
+     }
 }
   
